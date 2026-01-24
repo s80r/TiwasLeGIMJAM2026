@@ -1,49 +1,36 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// --- DATA UNTUK RIWAYAT LIPATAN ---
 [System.Serializable]
 public class FoldData 
 {
-    public float minX;
-    public float maxX;
-    public float width;
-    public bool pulledToRight;
+    public float min, max, width;
+    public bool isHorizontal; // True jika geser kiri-kanan, False jika atas-bawah
+    public bool pulledPositive; // Arah tarikan (ke kanan/atas)
     public List<GameObject> hiddenObjects;
-    public Dictionary<GameObject, Vector3> originalPositions; 
-    public GameObject hiddenNode; 
+    public Dictionary<GameObject, Vector3> originalPositions;
+    public GameObject hiddenNode;
 
-    public FoldData(float min, float max, float w, bool toRight, List<GameObject> objs, Dictionary<GameObject, Vector3> poses, GameObject node) 
+    public FoldData(float min, float max, float w, bool horiz, bool pos, List<GameObject> objs, Dictionary<GameObject, Vector3> poses, GameObject node) 
     {
-        minX = min;
-        maxX = max;
-        width = w;
-        pulledToRight = toRight;
-        hiddenObjects = objs;
-        originalPositions = poses;
-        hiddenNode = node;
+        this.min = min; this.max = max; this.width = w;
+        this.isHorizontal = horiz; this.pulledPositive = pos;
+        this.hiddenObjects = objs; this.originalPositions = poses;
+        this.hiddenNode = node;
     }
 }
 
-// --- MANAGER UTAMA ---
 public class FoldManager : MonoBehaviour
 {
-    [Header("Setup")]
     public LayerMask nodeLayer;
     public float alignmentTolerance = 0.5f;
-
     private Transform startNode;
     private Stack<FoldData> foldHistory = new Stack<FoldData>();
 
     void Update()
     {
-        // Klik Kiri untuk Mulai
         if (Input.GetMouseButtonDown(0)) HandleClick();
-        
-        // Lepas Klik untuk Eksekusi
         if (Input.GetMouseButtonUp(0)) HandleRelease();
-        
-        // Klik Kanan atau Tombol Z untuk Undo
         if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Z)) UndoFold();
     }
 
@@ -51,115 +38,91 @@ public class FoldManager : MonoBehaviour
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f, nodeLayer);
-        
-        if (hit.collider != null && hit.collider.CompareTag("Node"))
-        {
-            startNode = hit.collider.transform;
-            Debug.Log("Mulai dari: " + startNode.name);
-        }
+        if (hit.collider != null && hit.collider.CompareTag("Node")) startNode = hit.collider.transform;
     }
 
     void HandleRelease()
     {
         if (startNode == null) return;
-
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f, nodeLayer);
 
         if (hit.collider != null && hit.collider.transform != startNode)
         {
-            // Cek apakah sejajar secara horizontal
-            if (Mathf.Abs(startNode.position.y - hit.collider.transform.position.y) < alignmentTolerance)
+            Transform endNode = hit.collider.transform;
+            float diffX = Mathf.Abs(startNode.position.x - endNode.position.x);
+            float diffY = Mathf.Abs(startNode.position.y - endNode.position.y);
+
+            // Cek apakah tarikan lebih ke arah Horizontal atau Vertikal
+            if (diffY < alignmentTolerance) // HORIZONTAL
             {
-                // Tentukan arah tarikan kursor
-                bool toRight = startNode.position.x < hit.collider.transform.position.x;
-                ExecuteFold(startNode.position, hit.collider.transform.position, toRight);
+                bool toRight = startNode.position.x < endNode.position.x;
+                ExecuteFold(startNode.position, endNode.position, true, toRight);
+            }
+            else if (diffX < alignmentTolerance) // VERTIKAL
+            {
+                bool toUp = startNode.position.y < endNode.position.y;
+                ExecuteFold(startNode.position, endNode.position, false, toUp);
             }
         }
         startNode = null;
     }
 
-    void ExecuteFold(Vector3 p1, Vector3 p2, bool pulledToRight)
+    void ExecuteFold(Vector3 p1, Vector3 p2, bool isHorizontal, bool pulledPositive)
     {
-        float minX = Mathf.Min(p1.x, p2.x);
-        float maxX = Mathf.Max(p1.x, p2.x);
-        float foldWidth = maxX - minX;
+        float min = isHorizontal ? Mathf.Min(p1.x, p2.x) : Mathf.Min(p1.y, p2.y);
+        float max = isHorizontal ? Mathf.Max(p1.x, p2.x) : Mathf.Max(p1.y, p2.y);
+        float foldWidth = max - min;
 
         List<GameObject> hiddenThisTime = new List<GameObject>();
         Dictionary<GameObject, Vector3> positionsBeforeFold = new Dictionary<GameObject, Vector3>();
-        
-        // Cari semua objek yang bisa dilipat
         GameObject[] foldables = GameObject.FindGameObjectsWithTag("Foldable");
 
-        // 1. Catat posisi asli semua objek
-        foreach (GameObject obj in foldables)
-        {
-            if (!positionsBeforeFold.ContainsKey(obj))
-                positionsBeforeFold.Add(obj, obj.transform.position);
-        }
+        foreach (GameObject obj in foldables) positionsBeforeFold.Add(obj, obj.transform.position);
 
-        // 2. Terapkan logika melipat
         foreach (GameObject obj in foldables)
         {
-            float objX = obj.transform.position.x;
+            float objPos = isHorizontal ? obj.transform.position.x : obj.transform.position.y;
             float epsilon = 0.01f;
 
-            // Jika di area tengah: Sembunyikan
-            if (objX >= minX - epsilon && objX <= maxX + epsilon)
+            // Logika Sembunyikan/Potong (Hanya jika objek benar-benar di tengah area)
+            if (objPos >= min - epsilon && objPos <= max + epsilon)
             {
                 obj.SetActive(false);
                 hiddenThisTime.Add(obj);
             }
-            // Jika di luar area tengah: Geser sesuai arah kursor
+            // Logika Geser
             else
             {
-                if (pulledToRight && objX < minX) // Tarik ke kanan, bagian kiri terseret
-                {
-                    obj.transform.position += new Vector3(foldWidth, 0, 0);
-                }
-                else if (!pulledToRight && objX > maxX) // Tarik ke kiri, bagian kanan terseret
-                {
-                    obj.transform.position -= new Vector3(foldWidth, 0, 0);
+                Vector3 shift = isHorizontal ? new Vector3(foldWidth, 0, 0) : new Vector3(0, foldWidth, 0);
+                
+                if (isHorizontal) {
+                    if (pulledPositive && objPos < min) obj.transform.position += shift;
+                    else if (!pulledPositive && objPos > max) obj.transform.position -= shift;
+                } else {
+                    if (pulledPositive && objPos < min) obj.transform.position += shift;
+                    else if (!pulledPositive && objPos > max) obj.transform.position -= shift;
                 }
             }
         }
 
-        // 3. Sembunyikan Node Awal (Start Node)
         GameObject nodeToHide = startNode.gameObject;
         nodeToHide.SetActive(false);
-
-        // Simpan ke riwayat
-        foldHistory.Push(new FoldData(minX, maxX, foldWidth, pulledToRight, hiddenThisTime, positionsBeforeFold, nodeToHide));
-        Debug.Log("Level Dilipat ke arah " + (pulledToRight ? "Kanan" : "Kiri"));
+        foldHistory.Push(new FoldData(min, max, foldWidth, isHorizontal, pulledPositive, hiddenThisTime, positionsBeforeFold, nodeToHide));
     }
 
     void UndoFold()
     {
         if (foldHistory.Count == 0) return;
-
         FoldData lastFold = foldHistory.Pop();
 
-        // Kembalikan semua objek ke posisi snapshot-nya
         foreach (KeyValuePair<GameObject, Vector3> entry in lastFold.originalPositions)
         {
-            if (entry.Key != null)
-            {
+            if (entry.Key != null) {
                 entry.Key.transform.position = entry.Value;
-                
-                // Aktifkan kembali jika tadinya sembunyi
-                if (lastFold.hiddenObjects.Contains(entry.Key))
-                {
-                    entry.Key.SetActive(true);
-                }
+                if (lastFold.hiddenObjects.Contains(entry.Key)) entry.Key.SetActive(true);
             }
         }
-
-        // Munculkan kembali Node awal
-        if (lastFold.hiddenNode != null)
-        {
-            lastFold.hiddenNode.SetActive(true);
-        }
-        
-        Debug.Log("Lipatan dikembalikan.");
+        if (lastFold.hiddenNode != null) lastFold.hiddenNode.SetActive(true);
     }
 }
