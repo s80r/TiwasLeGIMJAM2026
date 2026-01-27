@@ -9,14 +9,12 @@ public class FoldData
     public bool pulledPositive;
     public List<GameObject> hiddenObjects;
     public Dictionary<GameObject, Vector3> originalPositions;
-    public GameObject hiddenNode;
 
-    public FoldData(float min, float max, float w, bool horiz, bool pos, List<GameObject> objs, Dictionary<GameObject, Vector3> poses, GameObject node) 
+    public FoldData(float min, float max, float w, bool horiz, bool pos, List<GameObject> objs, Dictionary<GameObject, Vector3> poses) 
     {
         this.min = min; this.max = max; this.width = w;
         this.isHorizontal = horiz; this.pulledPositive = pos;
         this.hiddenObjects = objs; this.originalPositions = poses;
-        this.hiddenNode = node;
     }
 }
 
@@ -28,6 +26,7 @@ public class FoldManager : MonoBehaviour
     public float alignmentTolerance = 0.5f;
 
     private Transform startNode;
+    private Transform endNode;
     private Stack<FoldData> foldHistory = new Stack<FoldData>();
 
     void Update()
@@ -52,7 +51,7 @@ public class FoldManager : MonoBehaviour
 
         if (hit.collider != null && hit.collider.transform != startNode)
         {
-            Transform endNode = hit.collider.transform;
+            endNode = hit.collider.transform;
             float diffX = Mathf.Abs(startNode.position.x - endNode.position.x);
             float diffY = Mathf.Abs(startNode.position.y - endNode.position.y);
 
@@ -66,70 +65,75 @@ public class FoldManager : MonoBehaviour
 
     void ExecuteFold(Vector3 p1, Vector3 p2, bool isHorizontal, bool pulledPositive)
     {
-        // Jika player sudah hancur sebelumnya, kita abaikan pengecekan player
-        if (player == null) {
-            PerformFoldLogic(p1, p2, isHorizontal, pulledPositive);
-            return;
-        }
-
-        float min = isHorizontal ? Mathf.Min(p1.x, p2.x) : Mathf.Min(p1.y, p2.y);
-        float max = isHorizontal ? Mathf.Max(p1.x, p2.x) : Mathf.Max(p1.y, p2.y);
-        float epsilon = 0.05f;
-
-        // --- CEK PLAYER TERJEPIT ---
-        float playerPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
-        if (playerPos >= min - epsilon && playerPos <= max + epsilon)
-        {
-            Debug.Log("Player hancur terjepit!");
-            Destroy(player); // Player hilang dari hierarki
-            // Kita tetap lanjutkan lipatan meskipun player hancur
-        }
-
-        PerformFoldLogic(p1, p2, isHorizontal, pulledPositive);
-    }
-
-    void PerformFoldLogic(Vector3 p1, Vector3 p2, bool isHorizontal, bool pulledPositive)
-    {
+        float epsilon = 0.001f; 
         float min = isHorizontal ? Mathf.Min(p1.x, p2.x) : Mathf.Min(p1.y, p2.y);
         float max = isHorizontal ? Mathf.Max(p1.x, p2.x) : Mathf.Max(p1.y, p2.y);
         float foldWidth = max - min;
-        float epsilon = 0.05f;
+
+        // 1. Cek Player Terjepit (Exclusive)
+        if (player != null)
+        {
+            float playerPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
+            if (playerPos > min + epsilon && playerPos < max - epsilon)
+            {
+                Destroy(player);
+            }
+        }
 
         List<GameObject> hiddenThisTime = new List<GameObject>();
         Dictionary<GameObject, Vector3> positionsBeforeFold = new Dictionary<GameObject, Vector3>();
-        GameObject[] foldables = GameObject.FindGameObjectsWithTag("Foldable");
 
-        foreach (GameObject obj in foldables) positionsBeforeFold.Add(obj, obj.transform.position);
+        List<GameObject> allTargets = new List<GameObject>();
+        allTargets.AddRange(GameObject.FindGameObjectsWithTag("Foldable"));
+        allTargets.AddRange(GameObject.FindGameObjectsWithTag("Node"));
 
-        foreach (GameObject obj in foldables)
+        foreach (GameObject obj in allTargets) 
         {
+            if (!positionsBeforeFold.ContainsKey(obj))
+                positionsBeforeFold.Add(obj, obj.transform.position);
+        }
+
+        Vector3 shift = isHorizontal ? new Vector3(foldWidth, 0, 0) : new Vector3(0, foldWidth, 0);
+
+        foreach (GameObject obj in allTargets)
+        {
+            // --- PROTEKSI END NODE ---
+            // End Node harus diam di tempat, tidak boleh bergeser atau hilang.
+            if (obj.transform == endNode) continue;
+
             float objPos = isHorizontal ? obj.transform.position.x : obj.transform.position.y;
 
-            if (objPos >= min - epsilon && objPos <= max + epsilon)
+            // 2. Logika Hilang (Node/Foldable benar-benar di TENGAH)
+            if (objPos > min + epsilon && objPos < max - epsilon)
             {
                 obj.SetActive(false);
                 hiddenThisTime.Add(obj);
             }
+            // 3. Logika Geser (Termasuk StartNode agar menghimpit ke EndNode)
             else
             {
-                Vector3 shift = isHorizontal ? new Vector3(foldWidth, 0, 0) : new Vector3(0, foldWidth, 0);
-                if (pulledPositive && objPos < min) obj.transform.position += shift;
-                else if (!pulledPositive && objPos > max) obj.transform.position -= shift;
+                if (pulledPositive)
+                {
+                    // Jika ditarik ke Kanan/Atas, semua yang di kiri/bawah ikut bergeser (termasuk startNode)
+                    if (objPos <= min + epsilon) obj.transform.position += shift;
+                }
+                else
+                {
+                    // Jika ditarik ke Kiri/Bawah, semua yang di kanan/atas ikut bergeser (termasuk startNode)
+                    if (objPos >= max - epsilon) obj.transform.position -= shift;
+                }
             }
         }
 
-        // Geser player jika dia masih ada dan tidak terjepit
+        // 4. Geser Player (jika tidak terjepit)
         if (player != null)
         {
             float pPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
-            Vector3 pShift = isHorizontal ? new Vector3(foldWidth, 0, 0) : new Vector3(0, foldWidth, 0);
-            if (pulledPositive && pPos < min) player.transform.position += pShift;
-            else if (!pulledPositive && pPos > max) player.transform.position -= pShift;
+            if (pulledPositive && pPos <= min + epsilon) player.transform.position += shift;
+            else if (!pulledPositive && pPos >= max - epsilon) player.transform.position -= shift;
         }
 
-        GameObject nodeToHide = startNode.gameObject;
-        nodeToHide.SetActive(false);
-        foldHistory.Push(new FoldData(min, max, foldWidth, isHorizontal, pulledPositive, hiddenThisTime, positionsBeforeFold, nodeToHide));
+        foldHistory.Push(new FoldData(min, max, foldWidth, isHorizontal, pulledPositive, hiddenThisTime, positionsBeforeFold));
     }
 
     void UndoFold()
@@ -139,11 +143,11 @@ public class FoldManager : MonoBehaviour
 
         foreach (KeyValuePair<GameObject, Vector3> entry in lastFold.originalPositions)
         {
-            if (entry.Key != null) {
+            if (entry.Key != null) 
+            {
                 entry.Key.transform.position = entry.Value;
                 if (lastFold.hiddenObjects.Contains(entry.Key)) entry.Key.SetActive(true);
             }
         }
-        if (lastFold.hiddenNode != null) lastFold.hiddenNode.SetActive(true);
     }
 }
