@@ -262,7 +262,7 @@ Transform:
   m_GameObject: {fileID: 26104721}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.8045, y: 4.3, z: 0}
+  m_LocalPosition: {x: -0.55, y: 4.45, z: 0}
   m_LocalScale: {x: 1.8742082, y: 0.275, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -673,8 +673,8 @@ Transform:
   m_GameObject: {fileID: 1064563874}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.7515, y: 1.4533, z: 0}
-  m_LocalScale: {x: 6.5569053, y: 7.235715, z: 1}
+  m_LocalPosition: {x: -3.0041, y: 1.0049, z: 0}
+  m_LocalScale: {x: 3.9957078, y: 7.9978323, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -759,7 +759,7 @@ AreaEffector2D:
     m_Bits: 4294967295
   m_UseGlobalAngle: 0
   m_ForceAngle: 90
-  m_ForceMagnitude: 250
+  m_ForceMagnitude: 240
   m_ForceVariation: 5
   m_ForceTarget: 0
   m_Drag: 0
@@ -874,8 +874,8 @@ Transform:
   m_GameObject: {fileID: 1080619007}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.4433, y: -4.43, z: 0}
-  m_LocalScale: {x: 1.9893953, y: 0.430461, z: 1}
+  m_LocalPosition: {x: -0.4612, y: -4.43, z: 0}
+  m_LocalScale: {x: 1.0360677, y: 0.430461, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1008,8 +1008,8 @@ Transform:
   m_GameObject: {fileID: 1096521495}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.2854, y: -3.19, z: 0}
-  m_LocalScale: {x: 7.4475546, y: 4.2536716, z: 1}
+  m_LocalPosition: {x: 2.503, y: -3.005, z: 0}
+  m_LocalScale: {x: 5.0010157, y: 4.011825, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1141,13 +1141,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1138978224}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0.0050625643, w: 0.99998724}
-  m_LocalPosition: {x: 4.5265, y: 4.6957, z: 0}
-  m_LocalScale: {x: 8.231415, y: 1.4952106, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.4988, y: 4.0012, z: 0}
+  m_LocalScale: {x: 4.998796, y: 2.0103252, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.58}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1601508572
 GameObject:
   m_ObjectHideFlags: 0
@@ -1325,8 +1325,8 @@ Transform:
   m_GameObject: {fileID: 1697891134}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.53, y: -0.39, z: 0}
-  m_LocalScale: {x: 7.8415737, y: 2.1553354, z: 1}
+  m_LocalPosition: {x: 4.5203, y: -0.5618, z: 0}
+  m_LocalScale: {x: 0.96834296, y: 1.3776895, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1428,8 +1428,8 @@ Transform:
   m_GameObject: {fileID: 1744365453}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.15, y: -3.25, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -4.51, y: -3.72, z: 0}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1733,8 +1733,8 @@ Transform:
   m_GameObject: {fileID: 1921265029}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.42, y: 1.38, z: 0}
-  m_LocalScale: {x: 7.8415737, y: 2.1553354, z: 1}
+  m_LocalPosition: {x: 2.5035, y: 1.0031, z: 0}
+  m_LocalScale: {x: 5.001102, y: 1.9936109, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1946,8 +1946,8 @@ Transform:
   m_GameObject: {fileID: 2140225580}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.7273, y: -4.2815, z: 0}
-  m_LocalScale: {x: 6.5846395, y: 1.404656, z: 1}
+  m_LocalPosition: {x: -3.0002, y: -4.4993, z: 0}
+  m_LocalScale: {x: 3.9994893, y: 0.99887466, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
