@@ -3,7 +3,7 @@ using UnityEngine;
 public class FanSwitch : MonoBehaviour
 {
     [Header("Target Settings")]
-    public GameObject fanObject; 
+    public GameObject fanObject;
     
     [Header("Switch Visuals")]
     public GameObject leverVisual;
@@ -13,7 +13,7 @@ public class FanSwitch : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     private Collider2D myCollider;
-
+    [SerializeField] private GameObject[] winds;
     void Awake()
     {
         spriteRenderer = leverVisual.GetComponent<SpriteRenderer>();
@@ -22,7 +22,8 @@ public class FanSwitch : MonoBehaviour
 
     void Start()
     {
-        UpdateFanStatus(); 
+        if (fanObject != null) winds = GameObject.FindGameObjectsWithTag("Angin");
+        UpdateFanStatus();
     }
 
     public void SetStatus(bool status)
@@ -92,7 +93,13 @@ public class FanSwitch : MonoBehaviour
                 col.enabled = isOn; // Jika isOn TRUE maka Trigger ENABLED (ON)
             }
         }
-
+        if (winds != null)
+        {
+            foreach (var wind in winds)
+            {
+                if (wind.transform.IsChildOf(fanObject.transform)) wind.SetActive(isOn);
+            }
+        }
         // Update Gambar Saklar
         if (spriteRenderer != null && switchOnSprite != null && switchOffSprite != null)
         {

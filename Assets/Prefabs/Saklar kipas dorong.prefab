@@ -190,10 +190,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fanObject: {fileID: 0}
-  leverVisual: {fileID: 0}
+  leverVisual: {fileID: 1203936101079037810}
   switchOnSprite: {fileID: 21300000, guid: 2f79d514245760c4e89229e730c1fe62, type: 3}
   switchOffSprite: {fileID: 21300000, guid: dfdbdde5818525448a494743b19819b1, type: 3}
   isOn: 1
+  winds: []
 --- !u!61 &6771615268542728868
 BoxCollider2D:
   m_ObjectHideFlags: 0

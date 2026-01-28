@@ -1587,7 +1587,7 @@ PrefabInstance:
     - target: {fileID: 5850567273507549981, guid: 9a818679721ae3247a540ef810d40773, type: 3}
       propertyPath: targetTilemap
       value: 
-      objectReference: {fileID: 617634458}
+      objectReference: {fileID: 0}
     - target: {fileID: 8147825951530609335, guid: 9a818679721ae3247a540ef810d40773, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.097626
@@ -1674,8 +1674,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 617634456}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1403644310
@@ -2379,3 +2378,4 @@ SceneRoots:
   - {fileID: 556292279}
   - {fileID: 277351591}
   - {fileID: 928171639}
+  - {fileID: 1383412943}
