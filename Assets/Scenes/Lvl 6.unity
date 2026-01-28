@@ -977,7 +977,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 145188354371336478, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.0737365
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 145188354371336478, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 145188354371336478, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1070,6 +1074,9 @@ MonoBehaviour:
     m_Bits: 8
   player: {fileID: 316019517}
   alignmentTolerance: 0.5
+  fihAnimator: {fileID: 0}
+  bautNyala: {fileID: 0}
+  bautMati: {fileID: 0}
 --- !u!4 &1601508574
 Transform:
   m_ObjectHideFlags: 0
