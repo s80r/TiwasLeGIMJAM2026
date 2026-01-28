@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps; // Wajib untuk manipulasi Tilemap
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -9,13 +10,24 @@ public class FoldData
     public bool pulledPositive;
     public List<GameObject> hiddenObjects;
     public Dictionary<GameObject, Vector3> originalPositions;
+    
+    // Simpan data tile yang dihapus agar bisa di-Undo
+    public List<TileUndoData> hiddenTiles; 
 
-    public FoldData(float min, float max, float w, bool horiz, bool pos, List<GameObject> objs, Dictionary<GameObject, Vector3> poses) 
+    public FoldData(float min, float max, float w, bool horiz, bool pos, List<GameObject> objs, Dictionary<GameObject, Vector3> poses, List<TileUndoData> tiles) 
     {
         this.min = min; this.max = max; this.width = w;
         this.isHorizontal = horiz; this.pulledPositive = pos;
         this.hiddenObjects = objs; this.originalPositions = poses;
+        this.hiddenTiles = tiles;
     }
+}
+
+[System.Serializable]
+public struct TileUndoData {
+    public Tilemap map;
+    public Vector3Int pos;
+    public TileBase tile;
 }
 
 public class FoldManager : MonoBehaviour
@@ -23,19 +35,21 @@ public class FoldManager : MonoBehaviour
     [Header("Setup")]
     public LayerMask nodeLayer;
     public GameObject player; 
+    public Tilemap targetTilemap; // Tarik Tilemap kamu ke sini di Inspector
     public float alignmentTolerance = 0.5f;
+
+    [Header("Visuals")]
+    public Sprite bautNyala;
+    public Sprite bautMati;
 
     private Transform startNode;
     private Transform endNode;
     private Stack<FoldData> foldHistory = new Stack<FoldData>();
-
-    public Animator fihAnimator;
-    public Sprite bautNyala;
-    public Sprite bautMati;
+    private Animator fihAnimator;
 
     void Start()
     {
-        fihAnimator = player.GetComponent<Animator>();
+        if (player != null) fihAnimator = player.GetComponent<Animator>();
     }
 
     void Update()
@@ -52,9 +66,8 @@ public class FoldManager : MonoBehaviour
         if (hit.collider != null && hit.collider.CompareTag("Node"))
         {
             startNode = hit.collider.transform;
-            GameObject node = startNode.gameObject;
-            node.GetComponent<SpriteRenderer>().sprite = bautNyala;
-            fihAnimator.SetBool("isFolding", true);
+            startNode.GetComponent<SpriteRenderer>().sprite = bautNyala;
+            if (fihAnimator != null) fihAnimator.SetBool("isFolding", true);
         } 
     }
 
@@ -67,7 +80,6 @@ public class FoldManager : MonoBehaviour
         if (hit.collider != null && hit.collider.transform != startNode)
         {
             endNode = hit.collider.transform;
-            
             float diffX = Mathf.Abs(startNode.position.x - endNode.position.x);
             float diffY = Mathf.Abs(startNode.position.y - endNode.position.y);
 
@@ -76,10 +88,10 @@ public class FoldManager : MonoBehaviour
             else if (diffX < alignmentTolerance) 
                 ExecuteFold(startNode.position, endNode.position, false, startNode.position.y < endNode.position.y);
         }
-        GameObject node = startNode.gameObject;
-        node.GetComponent<SpriteRenderer>().sprite = bautMati;
+
+        startNode.GetComponent<SpriteRenderer>().sprite = bautMati;
+        if (fihAnimator != null) fihAnimator.SetBool("isFolding", false);
         startNode = null;
-        fihAnimator.SetBool("isFolding", false);
     }
 
     void ExecuteFold(Vector3 p1, Vector3 p2, bool isHorizontal, bool pulledPositive)
@@ -88,8 +100,9 @@ public class FoldManager : MonoBehaviour
         float min = isHorizontal ? Mathf.Min(p1.x, p2.x) : Mathf.Min(p1.y, p2.y);
         float max = isHorizontal ? Mathf.Max(p1.x, p2.x) : Mathf.Max(p1.y, p2.y);
         float foldWidth = max - min;
+        int foldWidthInt = Mathf.RoundToInt(foldWidth);
 
-        // 1. Cek Player Terjepit (Exclusive)
+        // 1. Cek Player Terjepit
         if (player != null)
         {
             float playerPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
@@ -101,7 +114,53 @@ public class FoldManager : MonoBehaviour
 
         List<GameObject> hiddenThisTime = new List<GameObject>();
         Dictionary<GameObject, Vector3> positionsBeforeFold = new Dictionary<GameObject, Vector3>();
+        List<TileUndoData> tilesToUndo = new List<TileUndoData>();
 
+        // --- LOGIKA TILEMAP PER TILE ---
+        if (targetTilemap != null)
+        {
+            BoundsInt bounds = targetTilemap.cellBounds;
+            // List sementara agar tidak bentrok saat manipulasi tile dalam loop
+            Dictionary<Vector3Int, TileBase> nextTileLayout = new Dictionary<Vector3Int, TileBase>();
+
+            foreach (Vector3Int pos in bounds.allPositionsWithin)
+            {
+                TileBase tile = targetTilemap.GetTile(pos);
+                if (tile == null) continue;
+
+                // Koordinat tile (x atau y)
+                float tileCoord = isHorizontal ? pos.x : pos.y;
+
+                // A. Tile di TENGAH (Hapus) - Kita tambah 0.5 karena posisi tile dihitung dari pivotnya
+                if (tileCoord + 0.5f > min + epsilon && tileCoord + 0.5f < max - epsilon)
+                {
+                    tilesToUndo.Add(new TileUndoData { map = targetTilemap, pos = pos, tile = tile });
+                    targetTilemap.SetTile(pos, null);
+                }
+                // B. Tile di LUAR (Geser)
+                else
+                {
+                    Vector3Int shift = isHorizontal ? new Vector3Int(foldWidthInt, 0, 0) : new Vector3Int(0, foldWidthInt, 0);
+                    
+                    if (pulledPositive && tileCoord + 0.5f <= min + epsilon)
+                    {
+                        tilesToUndo.Add(new TileUndoData { map = targetTilemap, pos = pos, tile = tile });
+                        targetTilemap.SetTile(pos, null);
+                        nextTileLayout[pos + shift] = tile;
+                    }
+                    else if (!pulledPositive && tileCoord + 0.5f >= max - epsilon)
+                    {
+                        tilesToUndo.Add(new TileUndoData { map = targetTilemap, pos = pos, tile = tile });
+                        targetTilemap.SetTile(pos, null);
+                        nextTileLayout[pos - shift] = tile;
+                    }
+                }
+            }
+            // Terapkan hasil pergeseran tile
+            foreach(var item in nextTileLayout) targetTilemap.SetTile(item.Key, item.Value);
+        }
+
+        // --- LOGIKA GAMEOBJECT (Foldable & Node) ---
         List<GameObject> allTargets = new List<GameObject>();
         allTargets.AddRange(GameObject.FindGameObjectsWithTag("Foldable"));
         allTargets.AddRange(GameObject.FindGameObjectsWithTag("Node"));
@@ -112,47 +171,35 @@ public class FoldManager : MonoBehaviour
                 positionsBeforeFold.Add(obj, obj.transform.position);
         }
 
-        Vector3 shift = isHorizontal ? new Vector3(foldWidth, 0, 0) : new Vector3(0, foldWidth, 0);
+        Vector3 objShift = isHorizontal ? new Vector3(foldWidth, 0, 0) : new Vector3(0, foldWidth, 0);
 
         foreach (GameObject obj in allTargets)
         {
-            // --- PROTEKSI END NODE ---
-            // End Node harus diam di tempat, tidak boleh bergeser atau hilang.
             if (obj.transform == endNode) continue;
 
             float objPos = isHorizontal ? obj.transform.position.x : obj.transform.position.y;
 
-            // 2. Logika Hilang (Node/Foldable benar-benar di TENGAH)
             if (objPos > min + epsilon && objPos < max - epsilon)
             {
                 obj.SetActive(false);
                 hiddenThisTime.Add(obj);
             }
-            // 3. Logika Geser (Termasuk StartNode agar menghimpit ke EndNode)
             else
             {
-                if (pulledPositive)
-                {
-                    // Jika ditarik ke Kanan/Atas, semua yang di kiri/bawah ikut bergeser (termasuk startNode)
-                    if (objPos <= min + epsilon) obj.transform.position += shift;
-                }
-                else
-                {
-                    // Jika ditarik ke Kiri/Bawah, semua yang di kanan/atas ikut bergeser (termasuk startNode)
-                    if (objPos >= max - epsilon) obj.transform.position -= shift;
-                }
+                if (pulledPositive && objPos <= min + epsilon) obj.transform.position += objShift;
+                else if (!pulledPositive && objPos >= max - epsilon) obj.transform.position -= objShift;
             }
         }
 
-        // 4. Geser Player (jika tidak terjepit)
+        // --- GESER PLAYER ---
         if (player != null)
         {
             float pPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
-            if (pulledPositive && pPos <= min + epsilon) player.transform.position += shift;
-            else if (!pulledPositive && pPos >= max - epsilon) player.transform.position -= shift;
+            if (pulledPositive && pPos <= min + epsilon) player.transform.position += objShift;
+            else if (!pulledPositive && pPos >= max - epsilon) player.transform.position -= objShift;
         }
 
-        foldHistory.Push(new FoldData(min, max, foldWidth, isHorizontal, pulledPositive, hiddenThisTime, positionsBeforeFold));
+        foldHistory.Push(new FoldData(min, max, foldWidth, isHorizontal, pulledPositive, hiddenThisTime, positionsBeforeFold, tilesToUndo));
     }
 
     void UndoFold()
@@ -160,6 +207,16 @@ public class FoldManager : MonoBehaviour
         if (foldHistory.Count == 0) return;
         FoldData lastFold = foldHistory.Pop();
 
+        // 1. Kembalikan Tilemap
+        if (targetTilemap != null)
+        {
+            // Bersihkan area yang mungkin sudah bergeser agar tidak tumpang tindih saat balik
+            foreach (var t in lastFold.hiddenTiles) targetTilemap.SetTile(t.pos, null); 
+            // Kembalikan tile ke posisi asli
+            foreach (var t in lastFold.hiddenTiles) targetTilemap.SetTile(t.pos, t.tile);
+        }
+
+        // 2. Kembalikan GameObject
         foreach (KeyValuePair<GameObject, Vector3> entry in lastFold.originalPositions)
         {
             if (entry.Key != null) 
