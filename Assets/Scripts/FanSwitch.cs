@@ -6,6 +6,7 @@ public class FanSwitch : MonoBehaviour
     public GameObject fanObject; 
     
     [Header("Switch Visuals")]
+    public GameObject leverVisual;
     public Sprite switchOnSprite;  
     public Sprite switchOffSprite; 
     public bool isOn = true; // Status Saklar: TRUE = ON, FALSE = OFF
@@ -15,7 +16,7 @@ public class FanSwitch : MonoBehaviour
 
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = leverVisual.GetComponent<SpriteRenderer>();
         myCollider = GetComponent<Collider2D>();
     }
 
