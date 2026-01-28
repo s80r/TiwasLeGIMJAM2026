@@ -67,8 +67,7 @@ public class FoldManager : MonoBehaviour
         if (hit.collider != null && hit.collider.transform != startNode)
         {
             endNode = hit.collider.transform;
-            GameObject node = endNode.gameObject;
-            node.GetComponent<SpriteRenderer>().sprite = bautMati;
+            
             float diffX = Mathf.Abs(startNode.position.x - endNode.position.x);
             float diffY = Mathf.Abs(startNode.position.y - endNode.position.y);
 
@@ -77,6 +76,8 @@ public class FoldManager : MonoBehaviour
             else if (diffX < alignmentTolerance) 
                 ExecuteFold(startNode.position, endNode.position, false, startNode.position.y < endNode.position.y);
         }
+        GameObject node = startNode.gameObject;
+        node.GetComponent<SpriteRenderer>().sprite = bautMati;
         startNode = null;
         fihAnimator.SetBool("isFolding", false);
     }
