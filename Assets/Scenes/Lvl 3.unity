@@ -1230,6 +1230,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1005838174 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1963307383628497821, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
+  m_PrefabInstance: {fileID: 277351591}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1064563874
 GameObject:
   m_ObjectHideFlags: 0
@@ -1679,7 +1684,7 @@ MonoBehaviour:
   nodeLayer:
     serializedVersion: 2
     m_Bits: 8
-  player: {fileID: 0}
+  player: {fileID: 1005838174}
   alignmentTolerance: 0.5
   fihAnimator: {fileID: 0}
   bautNyala: {fileID: -3804784309168036508, guid: 15845f8f65120244b9649e90a251a33a, type: 3}
