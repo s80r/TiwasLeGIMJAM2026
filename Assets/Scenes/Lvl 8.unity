@@ -322,6 +322,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FoldManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1953177463986373811, guid: 9a818679721ae3247a540ef810d40773, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5850567273507549981, guid: 9a818679721ae3247a540ef810d40773, type: 3}
       propertyPath: player
       value: 
