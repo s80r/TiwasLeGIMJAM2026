@@ -3,6 +3,7 @@ using UnityEngine;
 public class SimpleMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    public GameObject gerak;
     private Rigidbody2D rb;
     private Vector2 moveInput;
 
@@ -25,6 +26,7 @@ public class SimpleMovement : MonoBehaviour
         moveInput = new Vector2(moveX, moveY).normalized;
 
         if (moveInput != Vector2.zero){
+            gerak.SetActive(true);
             Vector3 newScale = transform.localScale;
             if (moveX < 0) {
                 newScale.x = -0.07f;
@@ -34,6 +36,7 @@ public class SimpleMovement : MonoBehaviour
             }
             transform.localScale = newScale;
         }
+        else gerak.SetActive(false);
     }
 
     void FixedUpdate()
