@@ -2630,6 +2630,9 @@ MonoBehaviour:
     m_Bits: 8
   player: {fileID: 858875626}
   alignmentTolerance: 0.5
+  fihAnimator: {fileID: 0}
+  bautNyala: {fileID: 0}
+  bautMati: {fileID: 0}
 --- !u!4 &1601508574
 Transform:
   m_ObjectHideFlags: 0
