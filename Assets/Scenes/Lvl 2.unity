@@ -176,6 +176,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
+--- !u!1 &289567271 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1963307383628497821, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
+  m_PrefabInstance: {fileID: 289567270}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &518256688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -666,7 +671,7 @@ MonoBehaviour:
   nodeLayer:
     serializedVersion: 2
     m_Bits: 8
-  player: {fileID: 0}
+  player: {fileID: 289567271}
   alignmentTolerance: 0.5
 --- !u!4 &1601508574
 Transform:
