@@ -103,12 +103,12 @@ TextureImporter:
       name: ded_0
       rect:
         serializedVersion: 2
-        x: 403
-        y: 642
-        width: 1171
-        height: 755
+        x: 404
+        y: 643
+        width: 1169
+        height: 753
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 464d5fbd16ab7fd4389b7e5f6cf89eb0
     internalID: 0
     vertices: []
     indices: 
