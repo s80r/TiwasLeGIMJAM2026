@@ -744,6 +744,8 @@ MonoBehaviour:
     m_Bits: 8
   player: {fileID: 1744365453}
   alignmentTolerance: 0.5
+  fihAnimator: {fileID: 0}
+  thisNode: {fileID: 0}
 --- !u!4 &1601508574
 Transform:
   m_ObjectHideFlags: 0

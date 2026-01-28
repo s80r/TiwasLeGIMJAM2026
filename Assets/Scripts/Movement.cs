@@ -22,8 +22,18 @@ public class SimpleMovement : MonoBehaviour
         // GetAxisRaw membuat gerakan terasa instan/presisi
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
-
         moveInput = new Vector2(moveX, moveY).normalized;
+
+        if (moveInput != Vector2.zero){
+            Vector3 newScale = transform.localScale;
+            if (moveX < 0) {
+                newScale.x = -0.07f;
+            }
+            else{
+                newScale.x = 0.07f;
+            }
+            transform.localScale = newScale;
+        }
     }
 
     void FixedUpdate()

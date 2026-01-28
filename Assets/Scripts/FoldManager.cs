@@ -29,6 +29,15 @@ public class FoldManager : MonoBehaviour
     private Transform endNode;
     private Stack<FoldData> foldHistory = new Stack<FoldData>();
 
+    public Animator fihAnimator;
+    public Sprite bautNyala;
+    public Sprite bautMati;
+
+    void Start()
+    {
+        fihAnimator = player.GetComponent<Animator>();
+    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0)) HandleClick();
@@ -40,7 +49,13 @@ public class FoldManager : MonoBehaviour
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f, nodeLayer);
-        if (hit.collider != null && hit.collider.CompareTag("Node")) startNode = hit.collider.transform;
+        if (hit.collider != null && hit.collider.CompareTag("Node"))
+        {
+            startNode = hit.collider.transform;
+            GameObject node = startNode.gameObject;
+            node.GetComponent<SpriteRenderer>().sprite = bautNyala;
+            fihAnimator.SetBool("isFolding", true);
+        } 
     }
 
     void HandleRelease()
@@ -52,6 +67,8 @@ public class FoldManager : MonoBehaviour
         if (hit.collider != null && hit.collider.transform != startNode)
         {
             endNode = hit.collider.transform;
+            GameObject node = endNode.gameObject;
+            node.GetComponent<SpriteRenderer>().sprite = bautMati;
             float diffX = Mathf.Abs(startNode.position.x - endNode.position.x);
             float diffY = Mathf.Abs(startNode.position.y - endNode.position.y);
 
@@ -61,6 +78,7 @@ public class FoldManager : MonoBehaviour
                 ExecuteFold(startNode.position, endNode.position, false, startNode.position.y < endNode.position.y);
         }
         startNode = null;
+        fihAnimator.SetBool("isFolding", false);
     }
 
     void ExecuteFold(Vector3 p1, Vector3 p2, bool isHorizontal, bool pulledPositive)
