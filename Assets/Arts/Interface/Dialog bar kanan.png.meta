@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Dialog bar kanan_0: 8407194702881344246
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
