@@ -635,6 +635,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
+--- !u!1 &338015980 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1963307383628497821, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
+  m_PrefabInstance: {fileID: 338015979}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &391696293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1300,8 +1305,8 @@ Transform:
   m_GameObject: {fileID: 1064563874}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.5, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 4, z: 1}
+  m_LocalPosition: {x: -4.5, y: 3.5, z: 0}
+  m_LocalScale: {x: 1, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2111,7 +2116,7 @@ MonoBehaviour:
   nodeLayer:
     serializedVersion: 2
     m_Bits: 8
-  player: {fileID: 0}
+  player: {fileID: 338015980}
   alignmentTolerance: 0.5
 --- !u!4 &1601508574
 Transform:
@@ -2396,7 +2401,7 @@ Transform:
   m_GameObject: {fileID: 1870441135}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.5, y: 0.45, z: 0}
+  m_LocalPosition: {x: -4.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
