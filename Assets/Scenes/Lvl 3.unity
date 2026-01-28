@@ -1679,7 +1679,7 @@ MonoBehaviour:
   nodeLayer:
     serializedVersion: 2
     m_Bits: 8
-  player: {fileID: 1963307383628497821, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
+  player: {fileID: 0}
   alignmentTolerance: 0.5
   fihAnimator: {fileID: 0}
   bautNyala: {fileID: -3804784309168036508, guid: 15845f8f65120244b9649e90a251a33a, type: 3}
