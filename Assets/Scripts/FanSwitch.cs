@@ -8,56 +8,91 @@ public class FanSwitch : MonoBehaviour
     [Header("Switch Visuals")]
     public Sprite switchOnSprite;  
     public Sprite switchOffSprite; 
-    public bool isOn = true;       
+    public bool isOn = true; // Status Saklar: TRUE = ON, FALSE = OFF
 
     private SpriteRenderer spriteRenderer;
+    private Collider2D myCollider;
+
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        myCollider = GetComponent<Collider2D>();
+    }
 
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        UpdateFanStatus(); // Jalankan sekali saat start agar sinkron
+        UpdateFanStatus(); 
     }
 
-    void OnMouseDown()
+    public void SetStatus(bool status)
     {
-        isOn = !isOn; 
-        Debug.Log("Saklar diklik! Status sekarang: " + (isOn ? "ON" : "OFF"));
+        isOn = status;
         UpdateFanStatus();
     }
 
-    void UpdateFanStatus()
+    void Update()
     {
-        if (fanObject == null)
+        // Deteksi klik mouse kiri
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.LogError("Waduh! Kolom Fan Object di saklar masih kosong, bang!");
-            return;
-        }
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            
+            // --- LOGIKA ANTI GAGAL ---
+            // Kita cek pakai dua cara sekaligus: OverlapPoint dan RaycastAll
+            bool isClicked = false;
+            
+            // Cara 1: Cek apakah titik mouse ada di dalam collider saklar
+            if (myCollider != null && myCollider.OverlapPoint(mousePos))
+            {
+                isClicked = true;
+            }
+            
+            // Cara 2: Jika cara 1 gagal, tembak laser (Raycast) untuk cari saklar ini
+            // Ini berguna jika saklar sedikit tertutup objek lain
+            if (!isClicked)
+            {
+                RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
+                foreach (var hit in hits)
+                {
+                    if (hit.collider.gameObject == this.gameObject)
+                    {
+                        isClicked = true;
+                        break;
+                    }
+                }
+            }
 
-        // 1. Matikan/Nyalakan SEMUA AreaEffector2D (termasuk yang ada di Child)
+            if (isClicked)
+            {
+                isOn = !isOn; // TOGGLE: Balikkan status ON ke OFF atau sebaliknya
+                Debug.Log("Saklar Berhasil Diklik! Status: " + (isOn ? "ON (Nyala)" : "OFF (Mati)"));
+                UpdateFanStatus();
+            }
+        }
+    }
+
+    public void UpdateFanStatus()
+    {
+        if (fanObject == null) return;
+
+        // Ambil semua effector (angin)
         AreaEffector2D[] effectors = fanObject.GetComponentsInChildren<AreaEffector2D>(true);
-        foreach (var eff in effectors)
+        foreach (var eff in effectors) 
         {
-            eff.enabled = isOn;
+            if(eff != null) eff.enabled = isOn; // Jika isOn TRUE maka Effector ENABLED (ON)
         }
 
-        // 2. Matikan/Nyalakan SEMUA Hazard (termasuk yang ada di Child)
-        Hazard[] hazards = fanObject.GetComponentsInChildren<Hazard>(true);
-        foreach (var haz in hazards)
-        {
-            haz.enabled = isOn;
-        }
-
-        // 3. Matikan/Nyalakan Collider pemicu (Trigger) jika ada
-        // Ini jaga-jaga kalau tarikannya pakai PointEffector atau pemicu lainnya
+        // Ambil semua trigger (area sedot)
         Collider2D[] colliders = fanObject.GetComponentsInChildren<Collider2D>(true);
-        foreach (var col in colliders)
+        foreach (var col in colliders) 
         {
-            // Kita hanya matikan trigger-nya saja agar player tidak tersedot,
-            // tapi tetap bisa menabrak body kipasnya.
-            if (col.isTrigger) col.enabled = isOn;
+            if (col != null && col.isTrigger) 
+            {
+                col.enabled = isOn; // Jika isOn TRUE maka Trigger ENABLED (ON)
+            }
         }
 
-        // 4. Update tampilan saklar
+        // Update Gambar Saklar
         if (spriteRenderer != null && switchOnSprite != null && switchOffSprite != null)
         {
             spriteRenderer.sprite = isOn ? switchOnSprite : switchOffSprite;
