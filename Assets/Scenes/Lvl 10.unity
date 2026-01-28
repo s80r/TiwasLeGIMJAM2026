@@ -2540,8 +2540,8 @@ MonoBehaviour:
   player: {fileID: 1661433860}
   alignmentTolerance: 0.5
   fihAnimator: {fileID: 0}
-  bautNyala: {fileID: 0}
-  bautMati: {fileID: 0}
+  bautNyala: {fileID: -3804784309168036508, guid: 15845f8f65120244b9649e90a251a33a, type: 3}
+  bautMati: {fileID: -6912202750648558351, guid: 7b5db4f2b1b09aa4ead997f5f42e1763, type: 3}
 --- !u!4 &1601508574
 Transform:
   m_ObjectHideFlags: 0
