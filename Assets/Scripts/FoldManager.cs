@@ -41,6 +41,8 @@ public class FoldManager : MonoBehaviour
     [Header("Visuals")]
     public Sprite bautNyala;
     public Sprite bautMati;
+    public GameObject audio1;
+    public GameObject audio2;
 
     private Transform startNode;
     private Transform endNode;
@@ -68,6 +70,8 @@ public class FoldManager : MonoBehaviour
             startNode = hit.collider.transform;
             startNode.GetComponent<SpriteRenderer>().sprite = bautNyala;
             if (fihAnimator != null) fihAnimator.SetBool("isFolding", true);
+            if (audio1 != null) audio1.SetActive(true);
+            if (audio2 != null) audio2.SetActive(false);
         } 
     }
 
@@ -87,10 +91,12 @@ public class FoldManager : MonoBehaviour
                 ExecuteFold(startNode.position, endNode.position, true, startNode.position.x < endNode.position.x);
             else if (diffX < alignmentTolerance) 
                 ExecuteFold(startNode.position, endNode.position, false, startNode.position.y < endNode.position.y);
+            if (audio2 != null) audio2.SetActive(true);
         }
 
         if(startNode != null) startNode.GetComponent<SpriteRenderer>().sprite = bautMati;
         if (fihAnimator != null) fihAnimator.SetBool("isFolding", false);
+        if (audio1 != null) audio1.SetActive(false);
         startNode = null;
     }
 
