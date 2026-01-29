@@ -19928,6 +19928,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ba8cb2ea5cdb8f4187e80a995dcb476, type: 3}
+--- !u!1839735485 &277725715 stripped
+Tilemap:
+  m_CorrespondingSourceObject: {fileID: 677947912404277532, guid: 0ba8cb2ea5cdb8f4187e80a995dcb476, type: 3}
+  m_PrefabInstance: {fileID: 277725714}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1839735485 &277725716 stripped
+Tilemap:
+  m_CorrespondingSourceObject: {fileID: 2135577826843349592, guid: 0ba8cb2ea5cdb8f4187e80a995dcb476, type: 3}
+  m_PrefabInstance: {fileID: 277725714}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &278064671
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20404,7 +20414,11 @@ PrefabInstance:
     - target: {fileID: 5850567273507549981, guid: 9a818679721ae3247a540ef810d40773, type: 3}
       propertyPath: targetTilemap
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 277725716}
+    - target: {fileID: 5850567273507549981, guid: 9a818679721ae3247a540ef810d40773, type: 3}
+      propertyPath: targetTilemap2
+      value: 
+      objectReference: {fileID: 277725715}
     - target: {fileID: 8147825951530609335, guid: 9a818679721ae3247a540ef810d40773, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.097626
