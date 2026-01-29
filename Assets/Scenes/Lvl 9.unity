@@ -171,6 +171,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2635792723183755585, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
+      propertyPath: m_Size.x
+      value: 0.64072084
+      objectReference: {fileID: 0}
+    - target: {fileID: 2635792723183755585, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
+      propertyPath: m_Size.y
+      value: 5.9249353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2635792723183755585, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.03592807
+      objectReference: {fileID: 0}
+    - target: {fileID: 2635792723183755585, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
+      propertyPath: m_Offset.y
+      value: 2.4624672
+      objectReference: {fileID: 0}
     - target: {fileID: 3958670078344785450, guid: 14559450599e9794bb41eed8d2d60c6d, type: 3}
       propertyPath: m_Name
       value: Kipas
@@ -583,11 +599,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3327375108253058099, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.14
+      value: -7.5
       objectReference: {fileID: 0}
     - target: {fileID: 3327375108253058099, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.53
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3327375108253058099, guid: 4a9d5747d93f98548b17d173c11de16a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -774,6 +790,22 @@ PrefabInstance:
     - target: {fileID: 5185168035538492778, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: deathEffect
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
+      propertyPath: m_Size.x
+      value: 0.73336434
+      objectReference: {fileID: 0}
+    - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
+      propertyPath: m_Size.y
+      value: 4.287319
+      objectReference: {fileID: 0}
+    - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.0137915015
+      objectReference: {fileID: 0}
+    - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
+      propertyPath: m_Offset.y
+      value: 1.6979362
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
