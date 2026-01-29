@@ -52,6 +52,7 @@ MonoBehaviour:
     m_Bits: 8
   player: {fileID: 0}
   targetTilemap: {fileID: 0}
+  targetTilemap2: {fileID: 0}
   alignmentTolerance: 0.5
   bautNyala: {fileID: 0}
   bautMati: {fileID: 0}
@@ -99,8 +100,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 0bf9db6ebc014714fb0d6273c2e44c17, type: 3}
-  m_Resource: {fileID: 8300000, guid: 0bf9db6ebc014714fb0d6273c2e44c17, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 11ca3d901d5bb3a4fbdb7e4aa7bca22b, type: 3}
+  m_Resource: {fileID: 8300000, guid: 11ca3d901d5bb3a4fbdb7e4aa7bca22b, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -228,8 +229,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: fb2570500abb1c94db3dff97bbed5339, type: 3}
-  m_Resource: {fileID: 8300000, guid: fb2570500abb1c94db3dff97bbed5339, type: 3}
+  m_audioClip: {fileID: 8300000, guid: a72cc1332553e1545b5acc30d4d1e2bc, type: 3}
+  m_Resource: {fileID: 8300000, guid: a72cc1332553e1545b5acc30d4d1e2bc, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -360,7 +361,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 82118dbe64bf6d04c8b6de0fabca3a91, type: 3}
   m_Resource: {fileID: 8300000, guid: 82118dbe64bf6d04c8b6de0fabca3a91, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
