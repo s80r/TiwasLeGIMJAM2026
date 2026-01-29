@@ -10,29 +10,37 @@ public class SimpleMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        
-        // Agar tidak jatuh ke bawah karena gravitasi
         rb.gravityScale = 0;
-        // Agar tidak berputar saat menabrak benda
         rb.freezeRotation = true;
     }
 
     void Update()
     {
-        // Mendeteksi input WASD atau Panah
-        // GetAxisRaw membuat gerakan terasa instan/presisi
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(moveX, moveY).normalized;
 
-        if (moveInput != Vector2.zero){
+        if (moveInput != Vector2.zero)
+        {
             gerak.SetActive(true);
+
+            // 1. Logika Rotasi Halus (Menghadap arah WASD)
+            float angle = Mathf.Atan2(moveInput.y, moveInput.x) * Mathf.Rad2Deg;
+            
+            // Gunakan rotasi ini jika kamu mau objek 'gerak' atau arah tembakan mengikuti arah jalan
+            // Tapi agar tidak kebalik, kita manipulasi scale berdasarkan arah X
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // 2. Logika Anti-Kebalik (Flip Scale)
             Vector3 newScale = transform.localScale;
+            
+            // Jika arahnya ke kiri (antara 90 sampai 270 derajat), flip Y scale-nya
+            // Agar sprite tidak terlihat 'tengkurap' saat hadap kiri
             if (moveX < 0) {
-                newScale.x = -0.07f;
+                newScale.y = -Mathf.Abs(newScale.y); 
             }
-            else{
-                newScale.x = 0.07f;
+            else if (moveX > 0) {
+                newScale.y = Mathf.Abs(newScale.y);
             }
             transform.localScale = newScale;
         }
@@ -41,7 +49,6 @@ public class SimpleMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Menerapkan kecepatan ke Rigidbody
         rb.linearVelocity = moveInput * moveSpeed;
     }
 }
