@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Logo ghoti_0: 6373648833458113173
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

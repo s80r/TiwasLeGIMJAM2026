@@ -36,6 +36,7 @@ public class FoldManager : MonoBehaviour
     public LayerMask nodeLayer;
     public GameObject player; 
     public Tilemap targetTilemap;
+    public Tilemap targetTilemap2; // Kolom Tilemap baru
     public float alignmentTolerance = 0.5f;
 
     [Header("Visuals")]
@@ -108,7 +109,6 @@ public class FoldManager : MonoBehaviour
         float foldWidth = max - min;
         int foldWidthInt = Mathf.RoundToInt(foldWidth);
 
-        // 1. Cek Player Terjepit
         if (player != null)
         {
             float playerPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
@@ -120,35 +120,50 @@ public class FoldManager : MonoBehaviour
         List<TileUndoData> tilesToUndo = new List<TileUndoData>();
         Dictionary<FanSwitch, bool> switchStatuses = new Dictionary<FanSwitch, bool>();
 
-        // --- TILEMAP LOGIC ---
-        if (targetTilemap != null)
+        // --- TILEMAP LOGIC (Dibuat agar bisa menghandle banyak map) ---
+        Tilemap[] mapsToProcess = { targetTilemap, targetTilemap2 };
+
+        foreach (Tilemap map in mapsToProcess)
         {
-            foreach (Vector3Int pos in targetTilemap.cellBounds.allPositionsWithin)
+            if (map == null) continue;
+
+            foreach (Vector3Int pos in map.cellBounds.allPositionsWithin)
             {
-                TileBase tile = targetTilemap.GetTile(pos);
+                TileBase tile = map.GetTile(pos);
                 if (tile == null) continue;
-                tilesToUndo.Add(new TileUndoData { map = targetTilemap, pos = pos, tile = tile });
+
+                tilesToUndo.Add(new TileUndoData { map = map, pos = pos, tile = tile });
                 float tileCoord = isHorizontal ? pos.x : pos.y;
-                if (tileCoord + 0.5f > min + epsilon && tileCoord + 0.5f < max - epsilon) targetTilemap.SetTile(pos, null);
+                
+                // Hapus tile di area lipatan
+                if (tileCoord + 0.5f > min + epsilon && tileCoord + 0.5f < max - epsilon) 
+                    map.SetTile(pos, null);
             }
-
-            Vector3Int tShift = isHorizontal ? new Vector3Int(foldWidthInt, 0, 0) : new Vector3Int(0, foldWidthInt, 0);
-            List<TileUndoData> tilesToMove = new List<TileUndoData>();
-            foreach(var t in tilesToUndo)
-            {
-                float coord = isHorizontal ? t.pos.x : t.pos.y;
-                if (pulledPositive && coord + 0.5f <= min + epsilon) tilesToMove.Add(new TileUndoData { map = t.map, pos = t.pos + tShift, tile = t.tile });
-                else if (!pulledPositive && coord + 0.5f >= max - epsilon) tilesToMove.Add(new TileUndoData { map = t.map, pos = t.pos - tShift, tile = t.tile });
-            }
-
-            foreach(var t in tilesToUndo) {
-                float coord = isHorizontal ? t.pos.x : t.pos.y;
-                if ((pulledPositive && coord + 0.5f <= min + epsilon) || (!pulledPositive && coord + 0.5f >= max - epsilon)) targetTilemap.SetTile(t.pos, null);
-            }
-            foreach(var t in tilesToMove) targetTilemap.SetTile(t.pos, t.tile);
         }
 
-        // --- GAMEOBJECT LOGIC (Foldable, Node, Finish, Switch) ---
+        Vector3Int tShift = isHorizontal ? new Vector3Int(foldWidthInt, 0, 0) : new Vector3Int(0, foldWidthInt, 0);
+        List<TileUndoData> tilesToMove = new List<TileUndoData>();
+
+        foreach (var t in tilesToUndo)
+        {
+            float coord = isHorizontal ? t.pos.x : t.pos.y;
+            if (pulledPositive && coord + 0.5f <= min + epsilon) 
+                tilesToMove.Add(new TileUndoData { map = t.map, pos = t.pos + tShift, tile = t.tile });
+            else if (!pulledPositive && coord + 0.5f >= max - epsilon) 
+                tilesToMove.Add(new TileUndoData { map = t.map, pos = t.pos - tShift, tile = t.tile });
+        }
+
+        foreach (var t in tilesToUndo)
+        {
+            float coord = isHorizontal ? t.pos.x : t.pos.y;
+            if ((pulledPositive && coord + 0.5f <= min + epsilon) || (!pulledPositive && coord + 0.5f >= max - epsilon)) 
+                t.map.SetTile(t.pos, null);
+        }
+
+        foreach (var t in tilesToMove) 
+            t.map.SetTile(t.pos, t.tile);
+
+        // --- GAMEOBJECT LOGIC ---
         FanSwitch[] allSwitches = Object.FindObjectsByType<FanSwitch>(FindObjectsSortMode.None);
         foreach (var s in allSwitches) switchStatuses.Add(s, s.isOn);
 
@@ -186,9 +201,13 @@ public class FoldManager : MonoBehaviour
         if (foldHistory.Count == 0) return;
         FoldData lastFold = foldHistory.Pop();
 
-        if (targetTilemap != null) {
-            targetTilemap.ClearAllTiles();
-            foreach (var t in lastFold.hiddenTiles) t.map.SetTile(t.pos, t.tile);
+        // Bersihkan semua tilemap yang terdaftar sebelum restore
+        if (targetTilemap != null) targetTilemap.ClearAllTiles();
+        if (targetTilemap2 != null) targetTilemap2.ClearAllTiles();
+
+        foreach (var t in lastFold.hiddenTiles) 
+        {
+            t.map.SetTile(t.pos, t.tile);
         }
 
         foreach (KeyValuePair<GameObject, Vector3> entry in lastFold.originalPositions)
