@@ -109,18 +109,25 @@ public class FoldManager : MonoBehaviour
         float foldWidth = max - min;
         int foldWidthInt = Mathf.RoundToInt(foldWidth);
 
+        // --- BAGIAN YANG DIUBAH (Sesuai Permintaan) ---
         if (player != null)
         {
             float playerPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
-            if (playerPos > min + epsilon && playerPos < max - epsilon) Destroy(player);
+            // Jika player terjepit di area lipatan, panggil fungsi kematian
+            if (playerPos > min + epsilon && playerPos < max - epsilon) 
+            {
+                player.GetComponent<PlayerGameManager>().PlayerDeath();
+                return; // Berhenti mengeksekusi lipatan karena player sudah mati/reload scene
+            }
         }
+        // ----------------------------------------------
 
         List<GameObject> hiddenThisTime = new List<GameObject>();
         Dictionary<GameObject, Vector3> positionsBeforeFold = new Dictionary<GameObject, Vector3>();
         List<TileUndoData> tilesToUndo = new List<TileUndoData>();
         Dictionary<FanSwitch, bool> switchStatuses = new Dictionary<FanSwitch, bool>();
 
-        // --- TILEMAP LOGIC (Dibuat agar bisa menghandle banyak map) ---
+        // --- TILEMAP LOGIC ---
         Tilemap[] mapsToProcess = { targetTilemap, targetTilemap2 };
 
         foreach (Tilemap map in mapsToProcess)
@@ -135,7 +142,6 @@ public class FoldManager : MonoBehaviour
                 tilesToUndo.Add(new TileUndoData { map = map, pos = pos, tile = tile });
                 float tileCoord = isHorizontal ? pos.x : pos.y;
                 
-                // Hapus tile di area lipatan
                 if (tileCoord + 0.5f > min + epsilon && tileCoord + 0.5f < max - epsilon) 
                     map.SetTile(pos, null);
             }
@@ -201,7 +207,6 @@ public class FoldManager : MonoBehaviour
         if (foldHistory.Count == 0) return;
         FoldData lastFold = foldHistory.Pop();
 
-        // Bersihkan semua tilemap yang terdaftar sebelum restore
         if (targetTilemap != null) targetTilemap.ClearAllTiles();
         if (targetTilemap2 != null) targetTilemap2.ClearAllTiles();
 
