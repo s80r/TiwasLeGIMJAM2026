@@ -1,51 +1,79 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections; // Dibutuhkan untuk Coroutine
 
 public class PlayerGameManager : MonoBehaviour
 {
     [Header("Settings")]
-    public int levelAwal = 2; // Index scene Level 1 di Build Settings
+    public int levelAwal = 2; 
+    public float delaySebelumRespawn = 1.0f; // Jeda waktu sebelum pindah level
 
-    // 1. FUNGSI UNTUK MERESET DATA (Panggil ini lewat UI button jika ingin New Game)
+    [Header("Death Effects")]
+    public GameObject deathEffectPrefab; // Masukkan prefab partikel/sprite mati
+    public AudioClip suaraMati;          // Masukkan file audio mati
+    [Range(0f, 1f)] public float volumeMati = 0.8f;
+
+    private bool sedangMati = false; // Mencegah fungsi mati terpanggil berkali-kali
+
     public void ResetProgress()
     {
         PlayerPrefs.DeleteKey("LastCheckpointLevel");
-        Debug.Log("Progress dihapus. Kembali ke awal.");
+        Debug.Log("Progress dihapus.");
     }
 
-    // 2. FUNGSI CHECKPOINT (Dipanggil saat player menyentuh Bendera/Checkpoint)
     public void PlayerCheckpoint()
     {
         int levelSekarang = SceneManager.GetActiveScene().buildIndex;
-        
-        // Simpan index scene saat ini ke memori permanen HP/PC
         PlayerPrefs.SetInt("LastCheckpointLevel", levelSekarang);
         PlayerPrefs.Save();
-        
         Debug.Log("Checkpoint tersimpan! Level: " + levelSekarang);
     }
 
-    // 3. FUNGSI MATI (Dipanggil saat player menyentuh Duri/Musuh/Jurang)
+    // Fungsi ini dipanggil oleh duri/rintangan
     public void PlayerDeath()
     {
-        // Ambil data level terakhir yang di-checkpoint. 
-        // Jika belum pernah checkpoint, default-nya adalah levelAwal (1).
-        int levelTujuan = PlayerPrefs.GetInt("LastCheckpointLevel", levelAwal);
+        if (!sedangMati)
+        {
+            StartCoroutine(ProsesKematian());
+        }
+    }
 
-        Debug.Log("Player Mati! Mengulang dari Level: " + levelTujuan);
-        
-        // Pindah ke scene tersebut (akan mulai dari awal scene tersebut sesuai permintaanmu)
+    IEnumerator ProsesKematian()
+    {
+        sedangMati = true;
+        Debug.Log("Player Mati!");
+
+        // 1. Munculkan Efek Visual (Sprite/Partikel)
+        if (deathEffectPrefab != null)
+        {
+            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        }
+
+        // 2. Putar Suara Mati
+        if (suaraMati != null)
+        {
+            // Menggunakan PlayClipAtPoint agar suara tetap bunyi meskipun objek Player hancur/pindah
+            AudioSource.PlayClipAtPoint(suaraMati, transform.position, volumeMati);
+        }
+
+        // 3. Sembunyikan Player (opsional, agar terlihat seperti hancur)
+        // Kita matikan SpriteRenderer dan pergerakannya saja, jangan Destroy dulu
+        if(GetComponent<SpriteRenderer>() != null) GetComponent<SpriteRenderer>().enabled = false;
+        if(GetComponent<Rigidbody2D>() != null) GetComponent<Rigidbody2D>().simulated = false;
+
+        // 4. Tunggu sebentar
+        yield return new WaitForSeconds(delaySebelumRespawn);
+
+        // 5. Pindah Level
+        int levelTujuan = PlayerPrefs.GetInt("LastCheckpointLevel", levelAwal);
         SceneManager.LoadScene(levelTujuan);
     }
+
     void Update()
     {
-        // Cek jika kamu menekan tombol R (untuk Reset) saat main
-        // Ini sangat membantu saat masa testing (development)
         if (Input.GetKeyDown(KeyCode.R))
         {
             PlayerPrefs.DeleteAll();
-            Debug.Log("Data Dihapus! Silakan Restart Game.");
-            // Opsional: Langsung balik ke level 1
             SceneManager.LoadScene(levelAwal);
         }
     }

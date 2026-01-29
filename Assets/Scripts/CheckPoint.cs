@@ -2,16 +2,38 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    [Header("Visual Feedback (Opsional)")]
-    public Color warnaAktif = Color.green; // Warna saat checkpoint tersentuh
+    [Header("Visuals")]
+    public Sprite spriteBelumDiambil;
+    public Sprite spriteSudahDiambil;
+
+    [Header("Audio")]
+    public AudioClip suaraCheckpoint; // Masukkan file audio (MP3/WAV) ke sini
+    [Range(0f, 1f)] public float volume = 0.7f; // Atur keras suara (0 sampai 1)
+
+    private SpriteRenderer sr;
+    private AudioSource audioSource;
     private bool sudahDiambil = false;
+
+    void Start()
+    {
+        sr = GetComponent<SpriteRenderer>();
+        
+        // Setup AudioSource secara otomatis agar tidak perlu ribet tambah manual
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.clip = suaraCheckpoint;
+        audioSource.volume = volume;
+
+        if (sr != null && spriteBelumDiambil != null)
+        {
+            sr.sprite = spriteBelumDiambil;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Cek apakah yang menabrak adalah Player dan belum pernah diambil
         if (other.CompareTag("Player") && !sudahDiambil)
         {
-            // 1. Panggil fungsi PlayerCheckpoint di script utama Player
             PlayerGameManager manager = other.GetComponent<PlayerGameManager>();
             
             if (manager != null)
@@ -19,14 +41,19 @@ public class Checkpoint : MonoBehaviour
                 manager.PlayerCheckpoint();
                 sudahDiambil = true;
 
-                // 2. Feedback Visual: Ubah warna objek (opsional)
-                // Biar player tahu kalau checkpoint-nya sudah aktif
-                if (GetComponent<SpriteRenderer>() != null)
+                // 1. Ganti Sprite
+                if (sr != null && spriteSudahDiambil != null)
                 {
-                    GetComponent<SpriteRenderer>().color = warnaAktif;
+                    sr.sprite = spriteSudahDiambil;
                 }
 
-                Debug.Log("Checkpoint Berhasil Diaktifkan!");
+                // 2. Putar Suara
+                if (suaraCheckpoint != null)
+                {
+                    audioSource.Play();
+                }
+
+                Debug.Log("Checkpoint Aktif! Suara Berbunyi.");
             }
         }
     }
