@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Aura agak oren_0: -4920119686657270555
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
