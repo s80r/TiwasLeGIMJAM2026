@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 78b5beb9aebe1074d93108323009376f
   - enabled: 1
+    path: Assets/Scenes/Cutscene Awal.unity
+    guid: a23839becd055134e8861ecabd526269
+  - enabled: 1
     path: Assets/Scenes/Lvl 1.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
@@ -38,6 +41,24 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Lvl 10.unity
     guid: 9c755ae69cf46684ab5a914024ee22ec
+  - enabled: 1
+    path: Assets/Scenes/Lvl 11.unity
+    guid: 1d08d5aff63db1849b5af94eb2234641
+  - enabled: 1
+    path: Assets/Scenes/Lvl 12.unity
+    guid: 4135a1885c631644582f8a8f4d0f7fd1
+  - enabled: 1
+    path: Assets/Scenes/Lvl 13.unity
+    guid: 589122316a6c837418350042738ed034
+  - enabled: 1
+    path: Assets/Scenes/Lvl 14.unity
+    guid: c48313d18477a3e46a73b765e47715b5
+  - enabled: 1
+    path: Assets/Scenes/Lvl 15.unity
+    guid: f07f1515ad0469045b7a2cedf9a78c92
+  - enabled: 1
+    path: Assets/Scenes/Lvl 16.unity
+    guid: c3133b1a89f5c9448bc7eee4249356ab
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

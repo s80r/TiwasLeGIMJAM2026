@@ -23,9 +23,4 @@ public class Menu : MonoBehaviour
         SceneManager.LoadSceneAsync(1);
         SceneNum = SceneNow.buildIndex;
     }
-    public void NextLvl()
-    {
-        SceneManager.LoadSceneAsync(SceneNum + 1);
-        SceneNum = SceneNow.buildIndex;
-    }
 }
