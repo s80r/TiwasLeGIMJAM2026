@@ -1,16 +1,28 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class eek : MonoBehaviour
+public class LevelExit : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [Header("Settings")]
+    public int indexSceneTujuan; // Masukkan nomor scene di Build Settings
+    public bool resetCheckpointOnExit = true; // Jika true, checkpoint lama dihapus saat pindah level
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        
+        // Cek apakah yang menyentuh adalah Player
+        if (other.CompareTag("Player"))
+        {
+            // Ambil referensi ke PlayerGameManager untuk mereset checkpoint jika perlu
+            if (resetCheckpointOnExit)
+            {
+                PlayerPrefs.DeleteKey("LastCheckpointLevel");
+                PlayerPrefs.Save();
+            }
+
+            Debug.Log("Pindah ke Scene: " + indexSceneTujuan);
+            
+            // Pindah ke scene tujuan
+            SceneManager.LoadScene(indexSceneTujuan);
+        }
     }
 }
