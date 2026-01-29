@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class Hazard : MonoBehaviour
 {
-    [Header("Settings")]
-    public bool destroyInstantly = true;
-    
     [Header("Visual Effects (Optional)")]
     public GameObject deathEffect; // Seret prefab partikel ke sini jika ada
 
@@ -28,22 +25,20 @@ public class Hazard : MonoBehaviour
 
     private void HandlePlayerDeath(GameObject playerObj)
     {
-        Debug.Log("<color=red>Bebaya!</color> Player menyentuh " + gameObject.name);
+        Debug.Log("<color=red>Bahaya!</color> Player menyentuh " + gameObject.name);
 
-        // Munculkan efek partikel jika ada
+        // --- EFEK VISUAL ---
+        // Munculkan efek partikel jika ada sebelum scene berpindah
         if (deathEffect != null)
         {
             Instantiate(deathEffect, playerObj.transform.position, Quaternion.identity);
         }
 
-        if (destroyInstantly)
-        {
-            Destroy(playerObj);
-        }
-        else
-        {
-            // Jika tidak ingin hancur langsung, bisa matikan saja
-            playerObj.SetActive(false);
-        }
+        // --- PANGGIL FUNGSI MATI ---
+        // Memanggil fungsi dari script PlayerGameManager yang ada di Player
+        // Ini akan memicu reload ke level 1 atau level checkpoint
+        playerObj.GetComponent<PlayerGameManager>().PlayerDeath();
+
+        // Bagian Destroy dan SetActive sudah dihapus agar tidak terjadi konflik
     }
 }
