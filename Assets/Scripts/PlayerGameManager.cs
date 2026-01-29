@@ -37,4 +37,16 @@ public class PlayerGameManager : MonoBehaviour
         // Pindah ke scene tersebut (akan mulai dari awal scene tersebut sesuai permintaanmu)
         SceneManager.LoadScene(levelTujuan);
     }
+    void Update()
+    {
+        // Cek jika kamu menekan tombol R (untuk Reset) saat main
+        // Ini sangat membantu saat masa testing (development)
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            PlayerPrefs.DeleteAll();
+            Debug.Log("Data Dihapus! Silakan Restart Game.");
+            // Opsional: Langsung balik ke level 1
+            SceneManager.LoadScene(levelAwal);
+        }
+    }
 }
