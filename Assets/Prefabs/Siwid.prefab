@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 604268570142017987}
   m_Layer: 0
   m_Name: Siwid
-  m_TagString: Untagged
+  m_TagString: Foldable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: -6866832159502873631, guid: 853fe417824011b47873624893a0881e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
