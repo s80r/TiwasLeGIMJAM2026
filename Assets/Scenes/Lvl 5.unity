@@ -23343,13 +23343,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 402235523227796581, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.857548
+      objectReference: {fileID: 0}
+    - target: {fileID: 402235523227796581, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -22.741
+      objectReference: {fileID: 0}
     - target: {fileID: 1115385780609311090, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: m_Name
       value: Kipas isep isep (1)
       objectReference: {fileID: 0}
     - target: {fileID: 1172813661602538582, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: m_ForceMagnitude
-      value: -230
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 3423400867435627539, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: m_LocalScale.x
@@ -23401,15 +23409,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: m_Size.y
-      value: 12.500223
+      value: 21.705051
       objectReference: {fileID: 0}
     - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: m_Offset.x
-      value: -0.022745505
+      value: -0.02274549
       objectReference: {fileID: 0}
     - target: {fileID: 7599793287688856552, guid: f22b07e6b41c5134597f14cc1e31af0e, type: 3}
       propertyPath: m_Offset.y
-      value: 5.804388
+      value: 10.406801
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
