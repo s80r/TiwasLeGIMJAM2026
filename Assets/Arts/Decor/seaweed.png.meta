@@ -118,7 +118,7 @@ TextureImporter:
       name: seaweed_0
       rect:
         serializedVersion: 2
-        x: 256
+        x: 276
         y: 2246
         width: 1594
         height: 1250
@@ -140,7 +140,7 @@ TextureImporter:
       name: seaweed_1
       rect:
         serializedVersion: 2
-        x: 2342
+        x: 2326
         y: 2246
         width: 1594
         height: 1250
@@ -229,7 +229,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 4376
-        y: 195
+        y: 196
         width: 1594
         height: 1250
       alignment: 0
