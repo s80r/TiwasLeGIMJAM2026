@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3327375108253058099}
   - component: {fileID: 4771401073993547983}
   - component: {fileID: 8617477050686879845}
+  - component: {fileID: -2469544791318559929}
   - component: {fileID: 2005314878029688588}
   - component: {fileID: 3671996857701356328}
   - component: {fileID: 6732026908351983366}
@@ -106,6 +107,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   gerak: {fileID: 6553302565495458267}
+--- !u!114 &-2469544791318559929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963307383628497821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d676afd5a96adb4c8a70c050cedb645, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelAwal: 2
 --- !u!50 &2005314878029688588
 Rigidbody2D:
   serializedVersion: 5
