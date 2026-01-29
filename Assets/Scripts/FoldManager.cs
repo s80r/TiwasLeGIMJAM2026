@@ -34,10 +34,9 @@ public class FoldManager : MonoBehaviour
 {
     [Header("Setup")]
     public LayerMask nodeLayer;
-    public LayerMask groundLayer; 
     public GameObject player; 
     public Tilemap targetTilemap;
-    public Tilemap targetTilemap2;
+    public Tilemap targetTilemap2; // Kolom Tilemap baru
     public float alignmentTolerance = 0.5f;
 
     [Header("Visuals")]
@@ -51,7 +50,10 @@ public class FoldManager : MonoBehaviour
     private Stack<FoldData> foldHistory = new Stack<FoldData>();
     private Animator fihAnimator;
 
-    void Start() { if (player != null) fihAnimator = player.GetComponent<Animator>(); }
+    void Start()
+    {
+        if (player != null) fihAnimator = player.GetComponent<Animator>();
+    }
 
     void Update()
     {
@@ -70,6 +72,7 @@ public class FoldManager : MonoBehaviour
             startNode.GetComponent<SpriteRenderer>().sprite = bautNyala;
             if (fihAnimator != null) fihAnimator.SetBool("isFolding", true);
             if (audio1 != null) audio1.SetActive(true);
+            if (audio2 != null) audio2.SetActive(false);
         } 
     }
 
@@ -100,43 +103,53 @@ public class FoldManager : MonoBehaviour
 
     void ExecuteFold(Vector3 p1, Vector3 p2, bool isHorizontal, bool pulledPositive)
     {
-        float epsilon = 0.05f; 
+        float epsilon = 0.001f; 
         float min = isHorizontal ? Mathf.Min(p1.x, p2.x) : Mathf.Min(p1.y, p2.y);
         float max = isHorizontal ? Mathf.Max(p1.x, p2.x) : Mathf.Max(p1.y, p2.y);
         float foldWidth = max - min;
         int foldWidthInt = Mathf.RoundToInt(foldWidth);
 
+        // --- BAGIAN YANG DIUBAH (Sesuai Permintaan) ---
         if (player != null)
         {
             float playerPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
+            // Jika player terjepit di area lipatan, panggil fungsi kematian
             if (playerPos > min + epsilon && playerPos < max - epsilon) 
             {
                 player.GetComponent<PlayerGameManager>().PlayerDeath();
-                return;
+                return; // Berhenti mengeksekusi lipatan karena player sudah mati/reload scene
             }
         }
+        // ----------------------------------------------
 
         List<GameObject> hiddenThisTime = new List<GameObject>();
         Dictionary<GameObject, Vector3> positionsBeforeFold = new Dictionary<GameObject, Vector3>();
         List<TileUndoData> tilesToUndo = new List<TileUndoData>();
         Dictionary<FanSwitch, bool> switchStatuses = new Dictionary<FanSwitch, bool>();
 
+        // --- TILEMAP LOGIC ---
         Tilemap[] mapsToProcess = { targetTilemap, targetTilemap2 };
+
         foreach (Tilemap map in mapsToProcess)
         {
             if (map == null) continue;
+
             foreach (Vector3Int pos in map.cellBounds.allPositionsWithin)
             {
                 TileBase tile = map.GetTile(pos);
                 if (tile == null) continue;
+
                 tilesToUndo.Add(new TileUndoData { map = map, pos = pos, tile = tile });
                 float tileCoord = isHorizontal ? pos.x : pos.y;
-                if (tileCoord + 0.5f > min + epsilon && tileCoord + 0.5f < max - epsilon) map.SetTile(pos, null);
+                
+                if (tileCoord + 0.5f > min + epsilon && tileCoord + 0.5f < max - epsilon) 
+                    map.SetTile(pos, null);
             }
         }
 
         Vector3Int tShift = isHorizontal ? new Vector3Int(foldWidthInt, 0, 0) : new Vector3Int(0, foldWidthInt, 0);
         List<TileUndoData> tilesToMove = new List<TileUndoData>();
+
         foreach (var t in tilesToUndo)
         {
             float coord = isHorizontal ? t.pos.x : t.pos.y;
@@ -152,8 +165,11 @@ public class FoldManager : MonoBehaviour
             if ((pulledPositive && coord + 0.5f <= min + epsilon) || (!pulledPositive && coord + 0.5f >= max - epsilon)) 
                 t.map.SetTile(t.pos, null);
         }
-        foreach (var t in tilesToMove) t.map.SetTile(t.pos, t.tile);
 
+        foreach (var t in tilesToMove) 
+            t.map.SetTile(t.pos, t.tile);
+
+        // --- GAMEOBJECT LOGIC ---
         FanSwitch[] allSwitches = Object.FindObjectsByType<FanSwitch>(FindObjectsSortMode.None);
         foreach (var s in allSwitches) switchStatuses.Add(s, s.isOn);
 
@@ -179,8 +195,6 @@ public class FoldManager : MonoBehaviour
 
         if (player != null) {
             float pPos = isHorizontal ? player.transform.position.x : player.transform.position.y;
-            if (!positionsBeforeFold.ContainsKey(player)) positionsBeforeFold.Add(player, player.transform.position); // Simpan posisi player
-            
             if (pulledPositive && pPos <= min + epsilon) player.transform.position += objShift;
             else if (!pulledPositive && pPos >= max - epsilon) player.transform.position -= objShift;
         }
@@ -196,9 +210,11 @@ public class FoldManager : MonoBehaviour
         if (targetTilemap != null) targetTilemap.ClearAllTiles();
         if (targetTilemap2 != null) targetTilemap2.ClearAllTiles();
 
-        foreach (var t in lastFold.hiddenTiles) t.map.SetTile(t.pos, t.tile);
+        foreach (var t in lastFold.hiddenTiles) 
+        {
+            t.map.SetTile(t.pos, t.tile);
+        }
 
-        // KEMBALIKAN POSISI (Termasuk Player ke posisi aslinya)
         foreach (KeyValuePair<GameObject, Vector3> entry in lastFold.originalPositions)
         {
             if (entry.Key != null) {
@@ -208,23 +224,5 @@ public class FoldManager : MonoBehaviour
         }
 
         foreach (KeyValuePair<FanSwitch, bool> sw in lastFold.switchStatuses) if (sw.Key != null) sw.Key.SetStatus(sw.Value);
-
-        // --- ANTI-KEJEPIT FINAL (Teleport to Safety) ---
-        if (player != null)
-        {
-            Physics2D.SyncTransforms();
-            Collider2D playerCol = player.GetComponent<Collider2D>();
-            Collider2D hit = Physics2D.OverlapBox(player.transform.position, playerCol.bounds.size * 0.95f, 0, groundLayer);
-
-            if (hit != null)
-            {
-                // Jika masih nabrak, dorong secara fisik menjauh dari collider tembok
-                ColliderDistance2D dist = playerCol.Distance(hit);
-                if (dist.isOverlapped)
-                {
-                    player.transform.position += (Vector3)(dist.normal * (dist.distance + 0.1f));
-                }
-            }
-        }
     }
 }
