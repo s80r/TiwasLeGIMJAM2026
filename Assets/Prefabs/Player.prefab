@@ -120,6 +120,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelAwal: 2
+  delaySebelumRespawn: 1
+  deathEffectPrefab: {fileID: 1769965184733503645, guid: a31ecf318af7a4d4faff12902b63d337, type: 3}
+  suaraMati: {fileID: 8300000, guid: 6f86d6292c94a0447ae8507e9f5e893c, type: 3}
+  volumeMati: 0.8
 --- !u!50 &2005314878029688588
 Rigidbody2D:
   serializedVersion: 5
